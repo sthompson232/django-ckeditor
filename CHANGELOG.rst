@@ -7,6 +7,11 @@ Unreleased
 #. Replace ``ugettext_lazy()`` with ``gettext_lazy()``
 
 
+5.10.0
+-----
+#. New feature: Set max height and width for uploaded image (CKEDITOR_IMAGE_MAX_WIDTH & CKEDITOR_IMAGE_MAX_HEIGHT)
+
+
 5.9.0
 -----
 #. Django 3.0 support

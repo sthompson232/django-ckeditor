@@ -11,6 +11,8 @@ from PIL import Image
 from ckeditor_uploader import utils
 
 THUMBNAIL_SIZE = getattr(settings, "CKEDITOR_THUMBNAIL_SIZE", (75, 75))
+IMAGE_MAX_WIDTH = getattr(settings, "CKEDITOR_IMAGE_MAX_WIDTH", None)
+IMAGE_MAX_HEIGHT = getattr(settings, "CKEDITOR_IMAGE_MAX_HEIGHT", None)
 
 
 class PillowBackend(object):
@@ -30,7 +32,22 @@ class PillowBackend(object):
 
     def _compress_image(self, image):
         quality = getattr(settings, "CKEDITOR_IMAGE_QUALITY", 75)
-        image = image.resize(image.size, Image.ANTIALIAS).convert('RGB')
+        w, h = image.size
+        widthRatio = 1
+        heightRatio = 1
+
+        if IMAGE_MAX_WIDTH > 0:
+            widthRatio = max(w / IMAGE_MAX_HEIGHT, 1)
+
+        if IMAGE_MAX_HEIGHT > 0:
+            heightRatio = max(h / IMAGE_MAX_HEIGHT, 1)
+
+        ratio = max(widthRatio, heightRatio)
+        newWidth = int(w / ratio)
+        newHeight = int(h / ratio)
+        newSize = (newWidth, newHeight)
+
+        image = image.resize(newSize, Image.ANTIALIAS).convert('RGB')
         image_tmp = BytesIO()
         image.save(image_tmp, format="JPEG", quality=quality, optimize=True)
         return image_tmp
