@@ -11,8 +11,8 @@ from PIL import Image
 from ckeditor_uploader import utils
 
 THUMBNAIL_SIZE = getattr(settings, "CKEDITOR_THUMBNAIL_SIZE", (75, 75))
-IMAGE_MAX_WIDTH = getattr(settings, "CKEDITOR_IMAGE_MAX_WIDTH", None)
-IMAGE_MAX_HEIGHT = getattr(settings, "CKEDITOR_IMAGE_MAX_HEIGHT", None)
+IMAGE_MAX_WIDTH = getattr(settings, "CKEDITOR_IMAGE_MAX_WIDTH", 0)
+IMAGE_MAX_HEIGHT = getattr(settings, "CKEDITOR_IMAGE_MAX_HEIGHT", 0)
 
 
 class PillowBackend(object):
