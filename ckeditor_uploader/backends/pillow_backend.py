@@ -9,6 +9,7 @@ from django.utils.functional import cached_property
 from PIL import Image
 
 from ckeditor_uploader import utils
+import random
 
 THUMBNAIL_SIZE = getattr(settings, "CKEDITOR_THUMBNAIL_SIZE", (75, 75))
 IMAGE_MAX_WIDTH = getattr(settings, "CKEDITOR_IMAGE_MAX_WIDTH", 0)
@@ -53,6 +54,10 @@ class PillowBackend(object):
         return image_tmp
 
     def save_as(self, filepath):
+        # Add a unique ID for the file
+        unique_id = '%32x' % random.getrandbits(16 * 8)
+        filepath = "%s_%s%s" % (os.path.splitext(filepath)[0], unique_id, os.path.splitext(filepath)[1])
+
         if not self.is_image:
             saved_path = self.storage_engine.save(filepath, self.file_object)
             return saved_path
@@ -63,7 +68,8 @@ class PillowBackend(object):
         is_animated = hasattr(image, 'is_animated') and image.is_animated
         if should_compress and not is_animated:
             file_object = self._compress_image(image)
-            filepath = "{}.jpg".format(os.path.splitext(filepath)[0])
+            # Force jpg extension
+            filepath = "%s_%s.jpg" % (os.path.splitext(filepath)[0], unique_id)
             saved_path = self.storage_engine.save(filepath, file_object)
         else:
             file_object = self.file_object

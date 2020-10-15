@@ -6,6 +6,10 @@ Unreleased
 
 #. Replace ``ugettext_lazy()`` with ``gettext_lazy()``
 
+5.10.2
+-----
+#. Feature: generate a unique identifier for each file uploaded
+
 5.10.1
 -----
 #. Bug fix: typo
