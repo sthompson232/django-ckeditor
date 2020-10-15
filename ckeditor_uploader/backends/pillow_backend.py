@@ -69,7 +69,7 @@ class PillowBackend(object):
         if should_compress and not is_animated:
             file_object = self._compress_image(image)
             # Force jpg extension
-            filepath = "%s_%s.jpg" % (os.path.splitext(filepath)[0], unique_id)
+            filepath = "%s.jpg" % (os.path.splitext(filepath)[0])
             saved_path = self.storage_engine.save(filepath, file_object)
         else:
             file_object = self.file_object
