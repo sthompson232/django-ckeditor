@@ -37,7 +37,7 @@ class PillowBackend(object):
         heightRatio = 1
 
         if IMAGE_MAX_WIDTH > 0:
-            widthRatio = max(w / IMAGE_MAX_HEIGHT, 1)
+            widthRatio = max(w / IMAGE_MAX_WIDTH, 1)
 
         if IMAGE_MAX_HEIGHT > 0:
             heightRatio = max(h / IMAGE_MAX_HEIGHT, 1)
