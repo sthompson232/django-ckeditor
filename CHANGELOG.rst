@@ -6,6 +6,9 @@ Unreleased
 
 #. Replace ``ugettext_lazy()`` with ``gettext_lazy()``
 
+5.10.1
+-----
+#. Bug fix: typo
 
 5.10.0
 -----
