@@ -6,6 +6,10 @@ Unreleased
 
 #. Replace ``ugettext_lazy()`` with ``gettext_lazy()``
 
+5.10.3
+-----
+#. CKEDITOR_RESTRICT_BY_DATE: keep only year in the generated path (remove month and day) => performance in search.
+
 5.10.2
 -----
 #. Feature: generate a unique identifier for each file uploaded
