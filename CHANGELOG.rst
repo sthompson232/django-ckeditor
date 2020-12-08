@@ -6,6 +6,11 @@ Unreleased
 
 #. Replace ``ugettext_lazy()`` with ``gettext_lazy()``
 
+5.10.5
+-----
+#. Security check: do not allow users to see all files + super user see only his own files
+#. CKEDITOR_RESTRICT_BY_USER is activated by default, and set to 'id'
+
 5.10.4
 -----
 #. Add delete capabilitie

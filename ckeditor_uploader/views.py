@@ -25,7 +25,7 @@ def _get_user_path(user):
     user_path = ''
 
     # If CKEDITOR_RESTRICT_BY_USER is True upload file to user specific path.
-    RESTRICT_BY_USER = getattr(settings, 'CKEDITOR_RESTRICT_BY_USER', False)
+    RESTRICT_BY_USER = getattr(settings, 'CKEDITOR_RESTRICT_BY_USER', 'id')
     if RESTRICT_BY_USER:
         try:
             user_prop = getattr(user, RESTRICT_BY_USER)
@@ -140,16 +140,16 @@ def get_image_files(user=None, path=''):
     full paths for each file found.
     """
     # If a user is provided and CKEDITOR_RESTRICT_BY_USER is True,
-    # limit images to user specific path, but not for superusers.
+    # limit images to user specific path
     STORAGE_DIRECTORIES = 0
     STORAGE_FILES = 1
 
-    # allow browsing from anywhere if user is superuser
-    # otherwise use the user path
-    if user and not user.is_superuser:
-        user_path = _get_user_path(user)
-    else:
-        user_path = ''
+    # use the user path
+    user_path = _get_user_path(user)
+    
+    # Security: do not allow user to see all files
+    if not user_path or user_path == '':
+        return
 
     browse_path = os.path.join(settings.CKEDITOR_UPLOAD_PATH, user_path, path)
 
