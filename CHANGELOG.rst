@@ -6,6 +6,10 @@ Unreleased
 
 #. Replace ``ugettext_lazy()`` with ``gettext_lazy()``
 
+5.10.4
+-----
+#. Add delete capabilitie
+
 5.10.3
 -----
 #. CKEDITOR_RESTRICT_BY_DATE: keep only year in the generated path (remove month and day) => performance in search.

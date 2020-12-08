@@ -174,6 +174,27 @@ def get_image_files(user=None, path=''):
             yield element
 
 
+class FileDeleteView(generic.View):
+    http_method_names = ['delete']
+
+    def delete(self, request, **kwargs):
+        # Check if user is authenticated
+        if request.user and request.user.is_authenticated:
+            file_to_de_deleted = request.GET['path']
+
+            if is_valid_image_extension(file_to_de_deleted):
+                thumbnail_filename_path = utils.get_thumb_filename(file_to_de_deleted)
+                storage.delete(thumbnail_filename_path)
+
+            storage.delete(file_to_de_deleted)
+            return JsonResponse({'success': 1})
+
+        return JsonResponse(data={'success': 0}, status=403)
+
+
+delete = FileDeleteView.as_view()
+
+
 def get_files_browse_urls(user=None):
     """
     Recursively walks all dirs under upload dir and generates a list of
@@ -196,6 +217,7 @@ def get_files_browse_urls(user=None):
         files.append({
             'thumb': thumb,
             'src': src,
+            'path': filename,
             'is_image': is_valid_image_extension(src),
             'visible_filename': visible_filename,
         })

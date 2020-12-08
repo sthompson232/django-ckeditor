@@ -43,7 +43,7 @@ TEMPLATES = [
     },
 ]
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['0.0.0.0']
 
 CACHED_STORAGE = False
 
