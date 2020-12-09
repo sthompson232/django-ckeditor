@@ -6,6 +6,12 @@ Unreleased
 
 #. Replace ``ugettext_lazy()`` with ``gettext_lazy()``
 
+5.10.6
+-----
+#. Logging
+#. Security deletion: check if user own the file before delete
+#. Close image after open
+
 5.10.5
 -----
 #. Security check: do not allow users to see all files + super user see only his own files

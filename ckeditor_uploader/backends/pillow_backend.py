@@ -10,6 +10,9 @@ from PIL import Image
 
 from ckeditor_uploader import utils
 import random
+import logging
+
+logger = logging.getLogger(getattr(settings, 'CKEDITOR_LOGGER', 'django'))
 
 THUMBNAIL_SIZE = getattr(settings, "CKEDITOR_THUMBNAIL_SIZE", (75, 75))
 IMAGE_MAX_WIDTH = getattr(settings, "CKEDITOR_IMAGE_MAX_WIDTH", 0)
@@ -77,6 +80,8 @@ class PillowBackend(object):
 
         if not is_animated:
             self.create_thumbnail(file_object, saved_path)
+
+        image.close()
         return saved_path
 
     def create_thumbnail(self, file_object, file_path):
@@ -90,4 +95,5 @@ class PillowBackend(object):
             image = Image.open(file_object).convert('RGB')
         image.thumbnail(THUMBNAIL_SIZE, Image.ANTIALIAS)
         image.save(thumbnail_io, format='JPEG', optimize=True)
+        image.close()
         return self.storage_engine.save(thumbnail_filename, thumbnail_io)

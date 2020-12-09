@@ -19,6 +19,9 @@ from ckeditor_uploader.forms import SearchForm
 from ckeditor_uploader.utils import storage
 
 from .utils import is_valid_image_extension
+import logging
+
+logger = logging.getLogger(getattr(settings, 'CKEDITOR_LOGGER', 'django'))
 
 
 def _get_user_path(user):
@@ -146,9 +149,10 @@ def get_image_files(user=None, path=''):
 
     # use the user path
     user_path = _get_user_path(user)
-    
+
     # Security: do not allow user to see all files
     if not user_path or user_path == '':
+        logger.error('User path is empty. Impossible to show files')
         return
 
     browse_path = os.path.join(settings.CKEDITOR_UPLOAD_PATH, user_path, path)
@@ -178,16 +182,23 @@ class FileDeleteView(generic.View):
     http_method_names = ['delete']
 
     def delete(self, request, **kwargs):
-        # Check if user is authenticated
-        if request.user and request.user.is_authenticated:
-            file_to_de_deleted = request.GET['path']
+        try:
+            # Check if user is authenticated
+            if request.user and request.user.is_authenticated:
+                file_to_be_deleted = request.GET['path']
+                full_user_path = os.path.join(settings.CKEDITOR_UPLOAD_PATH, _get_user_path(request.user)) + '/'
+                logger.info('User want to delete %s with user path %s' % (file_to_be_deleted, full_user_path))
 
-            if is_valid_image_extension(file_to_de_deleted):
-                thumbnail_filename_path = utils.get_thumb_filename(file_to_de_deleted)
-                storage.delete(thumbnail_filename_path)
+                # Secutiry: check if the file is owned by user.
+                if full_user_path and full_user_path in file_to_be_deleted:
+                    if is_valid_image_extension(file_to_be_deleted):
+                        thumbnail_filename_path = utils.get_thumb_filename(file_to_be_deleted)
+                        storage.delete(thumbnail_filename_path)
 
-            storage.delete(file_to_de_deleted)
-            return JsonResponse({'success': 1})
+                    storage.delete(file_to_be_deleted)
+                    return JsonResponse({'success': 1})
+        except Exception as error:
+            pass
 
         return JsonResponse(data={'success': 0}, status=403)
 
