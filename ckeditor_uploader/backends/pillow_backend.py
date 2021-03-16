@@ -15,7 +15,7 @@ import logging
 logger = logging.getLogger(getattr(settings, 'CKEDITOR_LOGGER', 'django'))
 
 THUMBNAIL_SIZE = getattr(settings, "CKEDITOR_THUMBNAIL_SIZE", (75, 75))
-IMAGE_MAX_WIDTH = getattr(settings, "CKEDITOR_IMAGE_MAX_WIDTH", 0)
+IMAGE_MAX_WIDTH = getattr(settings, "CKEDITOR_IMAGE_MAX_WIDTH", 1024)
 IMAGE_MAX_HEIGHT = getattr(settings, "CKEDITOR_IMAGE_MAX_HEIGHT", 0)
 
 
@@ -60,6 +60,7 @@ class PillowBackend(object):
         # Add a unique ID for the file
         unique_id = '%32x' % random.getrandbits(16 * 8)
         filepath = "%s_%s%s" % (os.path.splitext(filepath)[0], unique_id, os.path.splitext(filepath)[1])
+        filepath = filepath.lower()
 
         if not self.is_image:
             saved_path = self.storage_engine.save(filepath, self.file_object)
@@ -67,9 +68,14 @@ class PillowBackend(object):
 
         image = Image.open(self.file_object)
 
-        should_compress = getattr(settings, "CKEDITOR_FORCE_JPEG_COMPRESSION", False)
+        should_compress = getattr(settings, "CKEDITOR_FORCE_JPEG_COMPRESSION", True)
         is_animated = hasattr(image, 'is_animated') and image.is_animated
-        if should_compress and not is_animated:
+        
+        img_format = getattr(image, "format", None)
+        logger.info("Saving image. Image format is %s" % img_format)
+        
+        if should_compress and (not is_animated or img_format in ['MPO', 'JPEG', 'PNG']):
+            logger.info("Go to compress image")
             file_object = self._compress_image(image)
             # Force jpg extension
             filepath = "%s.jpg" % (os.path.splitext(filepath)[0])
@@ -78,13 +84,14 @@ class PillowBackend(object):
             file_object = self.file_object
             saved_path = self.storage_engine.save(filepath, self.file_object)
 
-        if not is_animated:
+        if not is_animated or img_format in ['MPO', 'JPEG', 'PNG']:
             self.create_thumbnail(file_object, saved_path)
 
         image.close()
         return saved_path
 
     def create_thumbnail(self, file_object, file_path):
+        logger.info("Start generating thumbnail for file %s" % file_path)
         thumbnail_filename = utils.get_thumb_filename(file_path)
         thumbnail_io = BytesIO()
         # File object after saving e.g. to S3 can be closed.

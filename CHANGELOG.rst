@@ -6,6 +6,10 @@ Unreleased
 
 #. Replace ``ugettext_lazy()`` with ``gettext_lazy()``
 
+5.10.7
+-----
+#. Compress image: force compress image if format is JPEG, PNG, or MPO. MPO is an animated image but must be compress.
+
 5.10.6
 -----
 #. Logging
