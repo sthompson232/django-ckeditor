@@ -1,6 +1,6 @@
 django==3.1.1
 django-js-asset
 django_extensions
-Pillow==7.2.0
+Pillow==8.3.1
 selenium
 tox

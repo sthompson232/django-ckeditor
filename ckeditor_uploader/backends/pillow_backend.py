@@ -6,7 +6,7 @@ from io import BytesIO
 from django.conf import settings
 from django.utils.functional import cached_property
 
-from PIL import Image
+from PIL import Image, ExifTags
 
 from ckeditor_uploader import utils
 import random
@@ -34,7 +34,37 @@ class PillowBackend(object):
         finally:
             self.file_object.seek(0)
 
+    def rotate_image(self, image):
+        try:
+            for orientation in ExifTags.TAGS.keys():
+                if ExifTags.TAGS[orientation] == 'Orientation':
+                    break
+
+            if hasattr(image, '_getexif') and image._getexif():
+                exif = dict(image._getexif().items())
+                if orientation in exif:
+                    logger.info("orientation key founded in exif")
+                    if exif[orientation] == 3:
+                        logger.info("rotate image 180 degrees")
+                        image = image.rotate(180, expand=True)
+                    elif exif[orientation] == 6:
+                        logger.info("rotate image 270 degrees")
+                        image = image.rotate(270, expand=True)
+                    elif exif[orientation] == 8:
+                        logger.info("rotate image 90 degrees")
+                        image = image.rotate(90, expand=True)
+            else:
+                logger.info('Image has no exif information. May be a PNG.')
+        except Exception as ex:
+            logger.warning("Error rotating image! " + str(ex))
+            pass
+
+        return image
+
     def _compress_image(self, image):
+        # First, rotate if needed
+        image = self.rotate_image(image)
+
         quality = getattr(settings, "CKEDITOR_IMAGE_QUALITY", 75)
         w, h = image.size
         widthRatio = 1
