@@ -6,6 +6,10 @@ Unreleased
 
 #. Replace ``ugettext_lazy()`` with ``gettext_lazy()``
 
+5.10.9
+-----
+#. Separate views browseImages and browseAllFiles
+
 5.10.8
 -----
 #. Rotate image if needed before upload
