@@ -220,18 +220,24 @@ def get_files_browse_urls(user=None):
             else:
                 thumb = utils.get_icon_filename(filename)
             visible_filename = os.path.split(filename)[1]
-            if len(visible_filename) > 20:
-                visible_filename = visible_filename[0:19] + '...'
+            if len(visible_filename) > 30:
+                visible_filename = visible_filename[0:29] + "..."
         else:
             thumb = src
             visible_filename = os.path.split(filename)[1]
-        files.append({
-            'thumb': thumb,
-            'src': src,
-            'path': filename,
-            'is_image': is_valid_image_extension(src),
-            'visible_filename': visible_filename,
-        })
+
+        temp, extension = os.path.splitext(filename)
+
+        files.append(
+            {
+                'thumb': thumb,
+                'src': src,
+                'path': filename,
+                'is_image': is_valid_image_extension(src),
+                'visible_filename': visible_filename,
+                'extension': extension,
+            }
+        )
 
     return files
 
@@ -263,3 +269,61 @@ def browse(request):
         'form': form
     }
     return render(request, 'ckeditor/browse.html', context)
+
+
+def browseAllFiles(request):
+    files = get_files_browse_urls(request.user)
+    if request.method == 'POST':
+        form = SearchForm(request.POST)
+        if form.is_valid():
+            query = form.cleaned_data.get('q', '').lower()
+            files = list(filter(lambda d: query in d[
+                'visible_filename'].lower(), files))
+    else:
+        form = SearchForm()
+
+    show_dirs = getattr(settings, 'CKEDITOR_BROWSE_SHOW_DIRS', False)
+    dir_list = sorted(set(os.path.dirname(f['src'])
+                          for f in files), reverse=True)
+
+    # Ensures there are no objects created from Thumbs.db files - ran across
+    # this problem while developing on Windows
+    if os.name == 'nt':
+        files = [f for f in files if os.path.basename(f['src']) != 'Thumbs.db']
+
+    context = {
+        'show_dirs': show_dirs,
+        'dirs': dir_list,
+        'files': files,
+        'form': form
+    }
+    return render(request, 'ckeditor/browseAllFiles.html', context)
+
+
+def browseImages(request):
+    files = get_files_browse_urls(request.user)
+    if request.method == 'POST':
+        form = SearchForm(request.POST)
+        if form.is_valid():
+            query = form.cleaned_data.get('q', '').lower()
+            files = list(filter(lambda d: query in d[
+                'visible_filename'].lower(), files))
+    else:
+        form = SearchForm()
+
+    show_dirs = getattr(settings, 'CKEDITOR_BROWSE_SHOW_DIRS', False)
+    dir_list = sorted(set(os.path.dirname(f['src'])
+                          for f in files), reverse=True)
+
+    # Ensures there are no objects created from Thumbs.db files - ran across
+    # this problem while developing on Windows
+    if os.name == 'nt':
+        files = [f for f in files if os.path.basename(f['src']) != 'Thumbs.db']
+
+    context = {
+        'show_dirs': show_dirs,
+        'dirs': dir_list,
+        'files': files,
+        'form': form
+    }
+    return render(request, 'ckeditor/browseImages.html', context)

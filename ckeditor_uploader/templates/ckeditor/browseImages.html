@@ -1,0 +1,209 @@
+<!-- Override CKEDITOR file 5.9.0: https://github.com/django-ckeditor/django-ckeditor/blob/5.9.0/ckeditor_uploader/templates/ckeditor/browse.html  -->
+{% load static i18n %}
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+        <title>CKEditor | {% trans "Select an image to embed" %}</title>
+        <link rel="stylesheet" href="{% static "ckeditor/ckeditor_uploader/admin_base.css" %}" type="text/css" />
+        <link rel="stylesheet" href="{% static "ckeditor/galleriffic/css/basic.css" %}" type="text/css" />
+        <link rel="stylesheet" href="{% static "ckeditor/galleriffic/css/galleriffic-2.css" %}" type="text/css" />
+        <script type="text/javascript" src="{% static "ckeditor/galleriffic/js/jquery-1.3.2.js" %}"></script>
+        <script type="text/javascript" src="{% static "ckeditor/galleriffic/js/jquery.galleriffic.js" %}"></script>
+        <script type="text/javascript" src="{% static "ckeditor/galleriffic/js/jquery.opacityrollover.js" %}"></script>
+        <!-- We only want the thunbnails to display when javascript is disabled -->
+        <script type="text/javascript">
+            document.write('<style>.noscript { display: none; }</style>');
+        </script>
+        <style type="text/css">
+            a.thumb { text-align: center; display: block; float: left; width: 80px; height: 85px; word-wrap: break-word; line-height: 1.2em; overflow: hidden; }
+            a.thumb img { display: inline-block; }
+            span.filename { color: #666; font-size: 0.95em; }
+            #container { min-width: 880px; }
+        </style>
+    </head>
+    <body>
+        <div id="page">
+            {% csrf_token %}
+            <div id="container" style="width: 880px">
+                {% if files %}
+                    <h2>{% trans "Browse for the image you want, then click 'Embed Image' to continue..." %}</h2>
+                {% else %}
+                    <h2>{% trans "No images found. Upload images using the 'Image Button' dialog's 'Upload' tab." %}</h2>
+                {% endif %}
+
+                <!-- Start Advanced Gallery Html Containers -->
+                <div id="gallery" class="content">
+                    <div class="slideshow-container">
+                        <div id="loading" class="loader"></div>
+                        <div id="slideshow" class="slideshow"></div>
+                    </div>
+                    <div id="caption" class="caption-container" style="height: 120px"></div>
+                </div>
+                <div id="thumbs" class="navigation">
+                    <ul class="thumbs noscript">
+                        {% if show_dirs %}
+                            {% for dir in dirs %}
+                            <li>{% trans "Images in: " %}{{ dir }}</li>
+                                    {% for file in files %}
+                                        {% if dir in file.src %}
+                                            <li>
+                                                <a class="thumb" href="{% if file.is_image %}{{ file.src }}{% else %}{{ file.thumb }}{% endif %}">
+                                                    <img src="{{ file.thumb }}" style="max-width: 75px;"/>
+                                                    {% if file.visible_filename %}
+                                                        <span class="filename">{{ file.visible_filename }}</span>
+                                                    {% endif %}
+                                                </a>
+                                                <div class="caption">
+                                                    <div class="submit-row">
+                                                        <input href="{{ file.path }}" class="default delete" type="submit" name="_delete" value="Supprimer le fichier" style="margin-left: 5px; margin-right: 5px; background: red" />
+                                                        {% if file.is_image %}
+                                                            <input href="{{ file.src }}" class="default embed" type="submit" name="_embed" value="{% trans "Embed Image" %}" />
+                                                        {% endif %}
+                                                    </div>
+                                                    <p style="overflow-wrap: anywhere;float: right;">URL du fichier: <a href="{{ file.src }}" class="default" target="_blank" >{{ file.src }}</a></p>
+                                                </div>
+                                            </li>
+                                        {% endif %}  
+                                    {% endfor %} <!-- for file in files -->                       
+                            {% endfor %} <!-- for dir in dirs -->   
+                        {% else %}
+                            {% for file in files %}
+                                <li>
+                                    <a class="thumb" href="{% if file.is_image %}{{ file.src }}{% else %}{{ file.thumb }}{% endif %}">
+                                        <img src="{{ file.thumb }}" style="max-width: 75px;"/>
+                                        {% if file.visible_filename %}
+                                            <span class="filename">{{ file.visible_filename }}</span>
+                                        {% endif %}
+                                    </a>
+                                    <div class="caption">
+                                        <div class="submit-row">
+                                            <input href="{{ file.path }}" class="default delete" type="submit" name="_delete" value="Supprimer le fichier" style="margin-left: 5px; margin-right: 5px; background: red" />
+                                            {% if file.is_image %}
+                                                <input href="{{ file.src }}" class="default embed" type="submit" name="_embed" value="{% trans "Embed Image" %}" />
+                                            {% endif %}
+                                        </div>
+                                        <p style="overflow-wrap: anywhere;float: right;">URL du fichier: <a href="{{ file.src }}" class="default" target="_blank" >{{ file.src }}</a></p>
+                                    </div>
+                                </li>
+                            {% endfor %} <!-- for file in files -->    
+                        {% endif %}                                
+                    </ul>  
+                </div>
+                <div style="clear: both;"></div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            // helper functions
+            function getUrlParam(paramName) {
+                var reParam = new RegExp('(?:[\?&]|&amp;)' + paramName + '=([^&]+)', 'i') ;
+                var match = window.location.search.match(reParam) ;
+ 
+                return (match && match.length > 1) ? match[1] : '' ;
+            }
+            function scale_image() {
+                var image = $(".advance-link > img");
+                var image_width = image.width();
+                var image_height = image.height();
+                var max_width = 500;
+                var max_height = 450;
+                var widthRatio = Math.max(image_width / max_width, 1);
+                var heightRatio = Math.max(image_height / max_height, 1);
+                var ratio = Math.max(widthRatio,heightRatio);
+
+                image.width(image_width / ratio);
+                image.height(image_height / ratio);
+            }
+            // embedder
+            $('.embed').live('click', function() {
+                var funcNum = getUrlParam('CKEditorFuncNum');
+                var fileUrl = $(this).attr('href');
+                window.opener.CKEDITOR.tools.callFunction(funcNum, fileUrl);
+                window.close();
+            });
+            //delete file
+            $('.delete').live('click', function() {
+                var path = $(this).attr('href');
+                var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+                if (confirm('Êtes-vous sûr de vouloir supprimer le fichier :'+path) ) {
+                //delete
+                    $.ajaxSetup({
+                        beforeSend: function(xhr, settings) {
+                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                        }
+                    });
+                    $.ajax({
+                        url: '/ckeditor/delete/?path='+path,
+                        type: 'DELETE',
+                        datatype: 'json',
+                        success: function(result) {
+                            location.reload();
+                        },
+                        error: function(xhr,textStatus) {
+                            alert("Une erreur s'est produite. Vérifiez que vous êtes bien connecté, et réessayez.");    
+                            location.reload();
+                        },
+                    });
+                }
+            });
+            // galleriffic
+            jQuery(document).ready(function($) {
+                // We only want these styles applied when javascript is enabled
+                $('div.navigation').css({'width' : '300px', 'float' : 'left'});
+                $('div.content').css('display', 'block');
+                // Initially set opacity on thumbs and add
+                // additional styling for hover effect on thumbs
+                var onMouseOutOpacity = 0.67;
+                $('#thumbs ul.thumbs li').opacityrollover({
+                    mouseOutOpacity:   onMouseOutOpacity,
+                    mouseOverOpacity:  1.0,
+                    fadeSpeed:         'fast',
+                    exemptionSelector: '.selected'
+                });
+            
+                // Initialize Advanced Galleriffic Gallery
+                var gallery = $('#thumbs').galleriffic({
+                    delay:                     2500,
+                    numThumbs:                 15,
+                    preloadAhead:              10,
+                    enableTopPager:            true,
+                    enableBottomPager:         true,
+                    maxPagesToShow:            7,
+                    imageContainerSel:         '#slideshow',
+                    controlsContainerSel:      '#controls',
+                    captionContainerSel:       '#caption',
+                    loadingContainerSel:       '#loading',
+                    renderSSControls:          true,
+                    renderNavControls:         true,
+                    playLinkText:              '{% trans "Play Slideshow" %}',
+                    pauseLinkText:             '{% trans "Pause Slideshow" %}',
+                    prevLinkText:              '{% trans "&lsaquo; Previous Photo" %}',
+                    nextLinkText:              '{% trans "Next Photo &rsaquo;" %}',
+                    nextPageLinkText:          '{% trans "Next &rsaquo;" %}',
+                    prevPageLinkText:          '{% trans "&lsaquo; Prev" %}',
+                    enableHistory:             false,
+                    autoStart:                 false,
+                    syncTransitions:           false,
+                    defaultTransitionDuration: 500,
+                    onSlideChange:             function(prevIndex, nextIndex) {
+                        // 'this' refers to the gallery, which is an extension of $('#thumbs')
+                        this.find('ul.thumbs').children()
+                            .eq(prevIndex).fadeTo('fast', onMouseOutOpacity).end()
+                            .eq(nextIndex).fadeTo('fast', 1.0);
+                    },
+                    onPageTransitionOut:       function(callback) {
+                        this.fadeTo('fast', 0.0, callback);
+                    },
+                    onPageTransitionIn:        function() {
+                        this.fadeTo('fast', 1.0);
+                    },
+                    onTransitionIn:        function(newSlide, newCaption, isSync) {
+                        scale_image();
+                        newSlide.fadeTo(this.getDefaultTransitionDuration(isSync), 1.0);
+                        if (newCaption)
+                            newCaption.fadeTo(this.getDefaultTransitionDuration(isSync), 1.0);
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>
