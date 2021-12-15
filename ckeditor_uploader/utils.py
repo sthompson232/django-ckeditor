@@ -22,12 +22,40 @@ ckeditor_icons = [
     (r'\.doc$|\.docx$|\.odt$', fileicons_path + 'doc.png'),
     (r'\.txt$', fileicons_path + 'txt.png'),
     (r'\.ppt$', fileicons_path + 'ppt.png'),
-    (r'\.xls$', fileicons_path + 'xls.png'),
+    (r'\.xls$|\.xlsx$', fileicons_path + 'xls.png'),
+    (r"\.mp4$", fileicons_path + "video.png"),
+    (r"\.webm$", fileicons_path + "video.png"),
+    (r"\.mov$", fileicons_path + "video.png"),
+    (r"\.avi$", fileicons_path + "video.png"),
+    (r"\.flv$", fileicons_path + "video.png"),
+    (r"\.mkv$", fileicons_path + "video.png"),
+    (r"\.vob$", fileicons_path + "video.png"),
+    (r"\.ogv$", fileicons_path + "video.png"),
+    (r"\.ogg$", fileicons_path + "video.png"),
+    (r"\.drc$", fileicons_path + "video.png"),
+    (r"\.qt$", fileicons_path + "video.png"),
+    (r"\.wmv$", fileicons_path + "video.png"),
+    (r"\.mpg$", fileicons_path + "video.png"),
+    (r"\.mp2$", fileicons_path + "video.png"),
+    (r"\.mpeg$", fileicons_path + "video.png"),
+    (r"\.mpe$", fileicons_path + "video.png"),
+    (r"\.mpv$", fileicons_path + "video.png"),
+    (r"\.m2v$", fileicons_path + "video.png"),
+    (r"\.m4v$", fileicons_path + "video.png"),
+    (r"\.svi$", fileicons_path + "video.png"),
+    (r"\.3gp$", fileicons_path + "video.png"),
+    (r"\.3g2$", fileicons_path + "video.png"),
+    (r"\.m4p$", fileicons_path + "video.png"),
+    (r"\.amv$", fileicons_path + "video.png"),
+    (r"\.rm$", fileicons_path + "video.png"),
+    (r"\.rmvb$", fileicons_path + "video.png"),
     ('.*', fileicons_path + 'file.png'),  # Default
 ]
 CKEDITOR_FILEICONS = override_icons + ckeditor_icons
 
 IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif'}
+VIDEO_EXTENSIONS = {'.mp4', '.webm', '.avi', '.mov', '.mkv', '.flv', '.vob', '.ogv', '.ogg', '.drc', '.qt', '.wmv',
+                    '.mpg', '.mp2', '.mpeg', '.mpe', '.mpv', '.m2v', '.m4v', '.svi', '.3gp', '.3g2', '.m4p', '.amv', '.rm', '.rmvb'}
 
 
 # Allow for a custom storage backend defined in settings.
@@ -81,3 +109,8 @@ def get_media_url(path):
 def is_valid_image_extension(file_path):
     extension = os.path.splitext(file_path.lower())[1]
     return extension in IMAGE_EXTENSIONS
+
+
+def is_valid_video_extension(file_path):
+    extension = os.path.splitext(file_path.lower())[1]
+    return extension in VIDEO_EXTENSIONS

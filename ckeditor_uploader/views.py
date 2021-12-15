@@ -18,7 +18,7 @@ from ckeditor_uploader.backends import registry
 from ckeditor_uploader.forms import SearchForm
 from ckeditor_uploader.utils import storage
 
-from .utils import is_valid_image_extension
+from .utils import is_valid_image_extension, is_valid_video_extension
 import logging
 
 logger = logging.getLogger(getattr(settings, 'CKEDITOR_LOGGER', 'django'))
@@ -234,6 +234,7 @@ def get_files_browse_urls(user=None):
                 'src': src,
                 'path': filename,
                 'is_image': is_valid_image_extension(src),
+                'is_video': is_valid_video_extension(src),
                 'visible_filename': visible_filename,
                 'extension': extension,
             }
@@ -248,10 +249,17 @@ def browse(request):
         form = SearchForm(request.POST)
         if form.is_valid():
             query = form.cleaned_data.get('q', '').lower()
-            files = list(filter(lambda d: query in d[
-                'visible_filename'].lower(), files))
+            files = list(filter(lambda d: query in d['path'].lower(), files))
     else:
         form = SearchForm()
+
+    # Filter by type file
+    if 'type' in request.GET:
+        typeOfFile = request.GET['type']
+        if typeOfFile == "video":
+            files = list(filter(lambda d: d['is_video'], files))
+        if typeOfFile == "image":
+            files = list(filter(lambda d: d['is_image'], files))
 
     show_dirs = getattr(settings, 'CKEDITOR_BROWSE_SHOW_DIRS', False)
     dir_list = sorted(set(os.path.dirname(f['src'])
@@ -277,10 +285,17 @@ def browseAllFiles(request):
         form = SearchForm(request.POST)
         if form.is_valid():
             query = form.cleaned_data.get('q', '').lower()
-            files = list(filter(lambda d: query in d[
-                'visible_filename'].lower(), files))
+            files = list(filter(lambda d: query in d['path'].lower(), files))
     else:
         form = SearchForm()
+
+    # Filter by type file
+    if 'type' in request.GET:
+        typeOfFile = request.GET['type']
+        if typeOfFile == "video":
+            files = list(filter(lambda d: d['is_video'], files))
+        if typeOfFile == "image":
+            files = list(filter(lambda d: d['is_image'], files))
 
     show_dirs = getattr(settings, 'CKEDITOR_BROWSE_SHOW_DIRS', False)
     dir_list = sorted(set(os.path.dirname(f['src'])
@@ -306,10 +321,12 @@ def browseImages(request):
         form = SearchForm(request.POST)
         if form.is_valid():
             query = form.cleaned_data.get('q', '').lower()
-            files = list(filter(lambda d: query in d[
-                'visible_filename'].lower(), files))
+            files = list(filter(lambda d: query in d['path'].lower(), files))
     else:
         form = SearchForm()
+
+    # Filter by type file
+    files = list(filter(lambda d: d['is_image'], files))
 
     show_dirs = getattr(settings, 'CKEDITOR_BROWSE_SHOW_DIRS', False)
     dir_list = sorted(set(os.path.dirname(f['src'])

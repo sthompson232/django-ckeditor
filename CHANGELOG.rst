@@ -6,6 +6,10 @@ Unreleased
 
 #. Replace ``ugettext_lazy()`` with ``gettext_lazy()``
 
+5.10.10
+-----
+#. Filter files by type (video/image/all)
+
 5.10.9
 -----
 #. Separate views browseImages and browseAllFiles
