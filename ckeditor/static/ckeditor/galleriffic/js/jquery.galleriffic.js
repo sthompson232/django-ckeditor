@@ -633,7 +633,7 @@
 				// Construct new hidden span for the image
 				var newSlide = this.$imageContainer
 					.append('<span class="image-wrapper current"><a class="advance-link" rel="history" href="#'+this.data[nextIndex].hash+'" title="'+imageData.title+'">&nbsp;</a></span>')
-					.find('span.current').css('opacity', '0');
+					.find('span.current').css('opacity', '0', 'max-width', '500px', 'max-height', '500px');
 				
 				newSlide.find('a')
 					.append(imageData.image)
