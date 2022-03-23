@@ -44,12 +44,12 @@
                     </div>
                     <div id="caption" class="caption-container" style="height: 120px"></div>
                 </div>
-                <div id="search">
+                {% comment %} <div id="search">
                     <form action="" method="post">
                         {% csrf_token %}
                         {{ form }}
                     </form>
-                </div>
+                </div> {% endcomment %}
                 <div id="thumbs" class="navigation">
                     <ul class="thumbs noscript">
                         {% if show_dirs %}
@@ -66,7 +66,7 @@
                                                 </a>
                                                 <div class="caption">
                                                     <div class="submit-row">
-                                                        <input href="{{ file.path }}" class="default delete" type="submit" name="_delete" value="Supprimer le fichier" style="margin-left: 5px; margin-right: 5px; background: red" />
+                                                        {% comment %} <input href="{{ file.path }}" class="default delete" type="submit" name="_delete" value="Supprimer le fichier" style="margin-left: 5px; margin-right: 5px; background: red" /> {% endcomment %}
                                                         {% if request.GET.type == "video"%}
                                                             {% if file.extension in '.mp4,.webm,.avi,.mov,.mkv,.flv,.vob,.ogv,.ogg,.drc,.qt,.wmv,.mpg,.mp2,.mpeg,.mpe,.mpv,.m2v,.m4v.svi,.3gp,.3g2,.m4p,.m4v,.amv,.rm,.rmvb' %}
                                                                 <input href="{{ file.src }}" class="default embed" type="submit" name="_embed" value="Sélectionner" />
@@ -96,7 +96,7 @@
                                     </a>
                                     <div class="caption">
                                         <div class="submit-row">
-                                            <input href="{{ file.path }}" class="default delete" type="submit" name="_delete" value="Supprimer le fichier" style="margin-left: 5px; margin-right: 5px; background: red" />
+                                            {% comment %} <input href="{{ file.path }}" class="default delete" type="submit" name="_delete" value="Supprimer le fichier" style="margin-left: 5px; margin-right: 5px; background: red" /> {% endcomment %}
                                             {% if request.GET.type == "video"%}
                                                 {% if file.extension in '.mp4,.webm,.avi,.mov,.mkv,.flv,.vob,.ogv,.ogg,.drc,.qt,.wmv,.mpg,.mp2,.mpeg,.mpe,.mpv,.m2v,.m4v.svi,.3gp,.3g2,.m4p,.amv,.rm,.rmvb' %}
                                                     <input href="{{ file.src }}" class="default embed" type="submit" name="_embed" value="Sélectionner" />

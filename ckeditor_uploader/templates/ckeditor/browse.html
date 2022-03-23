@@ -59,7 +59,7 @@
                                                 </a>
                                                 <div class="caption">
                                                     <div class="submit-row">
-                                                        <input href="{{ file.path }}" class="default delete" type="submit" name="_delete" value="Supprimer le fichier" style="margin-left: 5px; margin-right: 5px; background: red" />
+                                                        {% comment %} <input href="{{ file.path }}" class="default delete" type="submit" name="_delete" value="Supprimer le fichier" style="margin-left: 5px; margin-right: 5px; background: red" /> {% endcomment %}
                                                         <input href="{{ file.src }}" class="default embed" type="submit" name="_embed" value="{% trans "Embed Image" %}" />
                                                     </div>
                                                 </div>
@@ -78,7 +78,7 @@
                                     </a>
                                     <div class="caption">
                                         <div class="submit-row">
-                                            <input href="{{ file.path }}" class="default delete" type="submit" name="_delete" value="Supprimer le fichier" style="margin-left: 5px; margin-right: 5px; background: red" />
+                                            {% comment %} <input href="{{ file.path }}" class="default delete" type="submit" name="_delete" value="Supprimer le fichier" style="margin-left: 5px; margin-right: 5px; background: red" /> {% endcomment %}
                                             <input href="{{ file.src }}" class="default embed" type="submit" name="_embed" value="{% trans "Embed Image" %}" />
                                         </div>
                                     </div>
