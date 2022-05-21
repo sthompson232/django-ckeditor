@@ -6,7 +6,7 @@ from django.views.decorators.cache import never_cache
 
 from . import views
 
-re_pathpatterns = [
+urlpatterns = [
     re_path(r'^upload/', staff_member_required(views.upload), name='ckeditor_upload'),
     re_path(r'^browse/', never_cache(staff_member_required(views.browse)), name='ckeditor_browse'),
     re_path(r'^delete/', staff_member_required(views.delete), name='ckeditor_delete'),
